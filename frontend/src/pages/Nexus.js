@@ -52,7 +52,7 @@ const Nexus = () => {
 
   const checkUploadProgress = async (fileId) => {
     try {
-      const response = await axios.get(`https://nexus-backend-virid.vercel.app/upload_progress/${fileId}`);
+      const response = await axios.get(`https://nexus-backend-j3vr.onrender.com/upload_progress/${fileId}`);
       const { status, progress } = response.data;
       
       setUploadProgress(progress);
@@ -98,7 +98,7 @@ const Nexus = () => {
     if (fileExtension === 'csv') {
       // CSV file handling (VisualisePage logic)
       try {
-        const response = await axios.post('https://nexus-backend-virid.vercel.app/upload_to_github', formData, {
+        const response = await axios.post('https://nexus-backend-j3vr.onrender.com/upload_to_github', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -129,7 +129,7 @@ const Nexus = () => {
     } else if (fileExtension === 'pdf') {
       // PDF file handling (DemoPage logic)
       try {
-        const response = await axios.post('https://nexus-backend-virid.vercel.app/process_file', formData, {
+        const response = await axios.post('https://nexus-backend-j3vr.onrender.com/process_file', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -186,7 +186,7 @@ const Nexus = () => {
     try {
       let response;
       if (fileType === 'csv') {
-        response = await axios.post('https://nexus-backend-virid.vercel.app/get_results', {
+        response = await axios.post('https://nexus-backend-j3vr.onrender.com/get_results', {
           prompt: inputValue,
           dataset_url: datasetUrl
         });
@@ -207,7 +207,7 @@ const Nexus = () => {
         
         setMessages(prev => [...prev, aiMessage]);
       } else if (fileType === 'pdf') {
-        response = await axios.post('https://nexus-backend-virid.vercel.app/query', {
+        response = await axios.post('https://nexus-backend-j3vr.onrender.com/query', {
           query: inputValue,
         });
 
