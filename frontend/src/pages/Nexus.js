@@ -24,7 +24,7 @@ const Nexus = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStatus, setUploadStatus] = useState(null);
   const progressCheckInterval = useRef(null);
-  const [imageUrl, setImageUrl] = useState(null);
+  const [setImageUrl] = useState(null);
   const [datasetUrl, setDatasetUrl] = useState(null);
 
   useEffect(() => {
