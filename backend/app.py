@@ -10,7 +10,7 @@ from werkzeug.utils import secure_filename
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import Chroma
+from langchain_community.vectorstores import Chroma
 from langchain_mistralai import ChatMistralAI
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
@@ -26,7 +26,7 @@ CORS(app)
 UPLOAD_FOLDER = './uploads'
 ALLOWED_EXTENSIONS = {'pdf', 'csv'}
 INDEX_PATH = './chroma_db'
-GITHUB_TOKEN = "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"
+GITHUB_TOKEN = "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"
 REPO_NAME = "ATMECS_dataset"
 CHATCSV_API_KEY = "sk_3ZkvTQE9QBCAuWhxzGbhUQ1a"
 
@@ -315,6 +315,6 @@ def upload_file_to_github():
     else:
         return jsonify({'error': 'Invalid file type'}), 400
 
-
-if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000, debug=False, use_reloader=False)
+@app.route("/")
+def start():
+    return "The Nexus Server is Running"

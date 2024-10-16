@@ -24,7 +24,7 @@ const Nexus = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStatus, setUploadStatus] = useState(null);
   const progressCheckInterval = useRef(null);
-  const [setImageUrl] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
   const [datasetUrl, setDatasetUrl] = useState(null);
 
   useEffect(() => {
@@ -43,7 +43,7 @@ const Nexus = () => {
 
   const showToast = (message, type) => {
     setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
+    setTimeout(() => setToast(null), 5000);
   };
 
   const hideToast = () => {
@@ -52,7 +52,7 @@ const Nexus = () => {
 
   const checkUploadProgress = async (fileId) => {
     try {
-      const response = await axios.get(`https://nexus-backend-j3vr.onrender.com/upload_progress/${fileId}`);
+      const response = await axios.get(`http://localhost:5000/upload_progress/${fileId}`);
       const { status, progress } = response.data;
       
       setUploadProgress(progress);
@@ -98,7 +98,7 @@ const Nexus = () => {
     if (fileExtension === 'csv') {
       // CSV file handling (VisualisePage logic)
       try {
-        const response = await axios.post('https://nexus-backend-j3vr.onrender.com/upload_to_github', formData, {
+        const response = await axios.post('http://localhost:5000/upload_to_github', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -129,7 +129,7 @@ const Nexus = () => {
     } else if (fileExtension === 'pdf') {
       // PDF file handling (DemoPage logic)
       try {
-        const response = await axios.post('https://nexus-backend-j3vr.onrender.com/process_file', formData, {
+        const response = await axios.post('http://localhost:5000/process_file', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -186,7 +186,7 @@ const Nexus = () => {
     try {
       let response;
       if (fileType === 'csv') {
-        response = await axios.post('https://nexus-backend-j3vr.onrender.com/get_results', {
+        response = await axios.post('http://localhost:5000/get_results', {
           prompt: inputValue,
           dataset_url: datasetUrl
         });
@@ -207,7 +207,7 @@ const Nexus = () => {
         
         setMessages(prev => [...prev, aiMessage]);
       } else if (fileType === 'pdf') {
-        response = await axios.post('https://nexus-backend-j3vr.onrender.com/query', {
+        response = await axios.post('http://localhost:5000/query', {
           query: inputValue,
         });
 
