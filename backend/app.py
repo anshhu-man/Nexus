@@ -29,6 +29,8 @@ GITHUB_TOKEN = "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"
 REPO_NAME = "ATMECS_dataset"
 CHATCSV_API_KEY = "sk_3ZkvTQE9QBCAuWhxzGbhUQ1a"
 
+app.config['UPLOAD_FOLDER'] = '/tmp'
+
 # Set Mistral API key
 os.environ["MISTRAL_API_KEY"] = "HrBozeMBZ61JZLCdQrqksACzmseeM14m"
 
