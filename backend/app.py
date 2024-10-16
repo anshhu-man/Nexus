@@ -18,26 +18,20 @@ from langchain_core.prompts import PromptTemplate
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 from github import Github
+import io
 
 app = Flask(__name__)
 CORS(app)
 
 # Constants
-UPLOAD_FOLDER = './tmp/uploads'
 ALLOWED_EXTENSIONS = {'pdf', 'csv'}
-INDEX_PATH = './chroma_db'
 GITHUB_TOKEN = "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"
 REPO_NAME = "ATMECS_dataset"
 CHATCSV_API_KEY = "sk_3ZkvTQE9QBCAuWhxzGbhUQ1a"
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50 MB limit
-
 # Set Mistral API key
 os.environ["MISTRAL_API_KEY"] = "HrBozeMBZ61JZLCdQrqksACzmseeM14m"
 
-# Ensure upload folder exists
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Global variables
 DOC_PATH = None
@@ -49,15 +43,11 @@ file_upload_progress = defaultdict(lambda: {'status': 'uploading', 'progress': 0
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-def initialize_components():
+def initialize_components(file_content):
     global retriever, vectorstore, llm, conversation
     try:
-        if not os.path.exists(DOC_PATH):
-            raise FileNotFoundError(f"PDF file not found at {DOC_PATH}")
-
-        print(f"Loading file: {DOC_PATH}")
-        loader = PyPDFLoader(DOC_PATH)
+        print("Loading file content")
+        loader = PyPDFLoader(io.BytesIO(file_content))
         docs = loader.load()
         print("PDF loaded successfully")
         
@@ -68,7 +58,7 @@ def initialize_components():
         hf_embeddings = HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2')
 
         print("Creating vector store...")
-        vectorstore = Chroma.from_documents(documents=chunks, embedding=hf_embeddings, persist_directory=INDEX_PATH)
+        vectorstore = Chroma.from_documents(documents=chunks, embedding=hf_embeddings)
         print("Vector store created successfully")
 
         retriever = vectorstore.as_retriever()
