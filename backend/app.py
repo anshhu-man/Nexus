@@ -19,6 +19,7 @@ from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 from github import Github
 import io
+import tempfile
 
 app = Flask(__name__)
 CORS(app)
@@ -29,10 +30,14 @@ GITHUB_TOKEN = "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"
 REPO_NAME = "ATMECS_dataset"
 CHATCSV_API_KEY = "sk_3ZkvTQE9QBCAuWhxzGbhUQ1a"
 
-app.config['UPLOAD_FOLDER'] = '/tmp'
+UPLOAD_FOLDER = tempfile.gettempdir()
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Set Mistral API key
 os.environ["MISTRAL_API_KEY"] = "HrBozeMBZ61JZLCdQrqksACzmseeM14m"
+
+# Ensure the upload folder exists
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
 # Global variables
@@ -50,7 +55,13 @@ def initialize_components(file_content):
     global retriever, vectorstore, llm, conversation
     try:
         print("Loading file content")
-        loader = PyPDFLoader(io.BytesIO(file_content))
+        # Create a temporary file
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_file:
+            temp_file.write(file_content)
+            temp_file_path = temp_file.name
+            
+        # Use the temporary file path with PyPDFLoader
+        loader = PyPDFLoader(temp_file_path)
         docs = loader.load()
         print("PDF loaded successfully")
         
@@ -155,9 +166,11 @@ def process_file():
         filename = secure_filename(file.filename)
         file_id = str(uuid.uuid4())
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(file_path)
         
         try:
+            file.save(file_path)
+            print(f"File saved to: {file_path}")
+
             file_upload_progress[file_id]['status'] = 'processing'
             file_upload_progress[file_id]['progress'] = 50
 
