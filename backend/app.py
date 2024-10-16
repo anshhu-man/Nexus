@@ -81,7 +81,7 @@ def initialize_components(file_content):
         embeddings = get_embeddings(texts)
 
         print("Creating vector store...")
-        vectorstore = Chroma.from_documents(documents=chunks, embedding=hf_embeddings)
+        vectorstore = Chroma.from_documents(documents=chunks, embedding=embeddings)
         print("Vector store created successfully")
 
         retriever = vectorstore.as_retriever()
