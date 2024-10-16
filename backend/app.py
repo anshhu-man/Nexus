@@ -23,7 +23,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Constants
-UPLOAD_FOLDER = './uploads'
+UPLOAD_FOLDER = './tmp/uploads'
 ALLOWED_EXTENSIONS = {'pdf', 'csv'}
 INDEX_PATH = './chroma_db'
 GITHUB_TOKEN = "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"
