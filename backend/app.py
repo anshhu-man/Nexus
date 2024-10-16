@@ -9,7 +9,6 @@ from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain_mistralai import ChatMistralAI
 from langchain_core.output_parsers import StrOutputParser
@@ -18,7 +17,6 @@ from langchain_core.prompts import PromptTemplate
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 from github import Github
-import io
 import tempfile
 
 app = Flask(__name__)
@@ -29,6 +27,7 @@ ALLOWED_EXTENSIONS = {'pdf', 'csv'}
 GITHUB_TOKEN = "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"
 REPO_NAME = "ATMECS_dataset"
 CHATCSV_API_KEY = "sk_3ZkvTQE9QBCAuWhxzGbhUQ1a"
+HUGGINGFACE_API_KEY = "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"
 
 UPLOAD_FOLDER = tempfile.gettempdir()
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -51,6 +50,14 @@ file_upload_progress = defaultdict(lambda: {'status': 'uploading', 'progress': 0
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+# Hugging Face API function
+def get_embeddings(texts):
+    API_URL = "https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2"
+    headers = {"Authorization": f"Bearer {HUGGINGFACE_API_KEY}"}
+    payload = {"inputs": texts}
+    response = requests.post(API_URL, headers=headers, json=payload)
+    return response.json()
+
 def initialize_components(file_content):
     global retriever, vectorstore, llm, conversation
     try:
@@ -69,7 +76,9 @@ def initialize_components(file_content):
         chunks = text_splitter.split_documents(docs)
         print(f"Text split into {len(chunks)} chunks")
 
-        hf_embeddings = HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2')
+        # Get embeddings using the Hugging Face API
+        texts = [chunk.page_content for chunk in chunks]
+        embeddings = get_embeddings(texts)
 
         print("Creating vector store...")
         vectorstore = Chroma.from_documents(documents=chunks, embedding=hf_embeddings)
