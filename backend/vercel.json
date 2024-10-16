@@ -4,7 +4,9 @@
         {
             "src":"./index.py",
             "use": "@vercel/python",
-            "config":{"runtime":"python3.11.5"}
+            "config":{"runtime":"python3.11.5"},
+            "memory": 2048,
+            "timeout": 600
         }
     ],
     "routes": [
