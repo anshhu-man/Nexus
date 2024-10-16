@@ -45,6 +45,7 @@ file_upload_progress = defaultdict(lambda: {'status': 'uploading', 'progress': 0
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 def initialize_components(file_content):
     global retriever, vectorstore, llm, conversation
     try:
@@ -153,7 +154,7 @@ def process_file():
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file_id = str(uuid.uuid4())
-        file_path = os.path.normpath(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(file_path)
         
         try:
@@ -162,7 +163,9 @@ def process_file():
 
             if filename.lower().endswith('.pdf'):
                 DOC_PATH = file_path
-                initialize_components()
+                with open(file_path, 'rb') as f:
+                    file_content = f.read()
+                initialize_components(file_content)
             elif filename.lower().endswith('.csv'):
                 dataset_url = upload_to_github(file_path, REPO_NAME, GITHUB_TOKEN)
                 os.remove(file_path)
